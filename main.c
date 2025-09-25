@@ -1,25 +1,23 @@
 #include <stdio.h>
 
-void mainMenu(){
-    printf("Main Menu\n");
-    printf("1. Customer\n");
-    printf("2. Administrator\n");
-    printf("3. Exit\n");
-}
-
 int main(){
     int choice;
     while(1){
-        mainMenu();
+        printf("Main Menu\n");
+        printf("1. Customer\n");
+        printf("2. Administrator\n");
+        printf("3. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
         switch (choice)
         {
         case 1:
-            printf("Customer selected.\n");
+            printf("Product Search.\n");
+            printf("Will be implemented in later release.\n");
             break;
         case 2:
-            printf("Administrator selected.\n");
+            printf("Administrator Login.\n");
+            printf("Will be implemented in later release.\n");
             break;
         case 3:
             printf("Exiting the program.\n");
