@@ -2,10 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX_PRODUCTS 10
-#define MAX_LENGTH 50
+struct Product{
+    char name[50];
+    float price;
+    int stock;
+};
 
-char itemList[MAX_PRODUCTS][MAX_LENGTH];
+struct Product products[10];
 int productCount = 0;
 
 void clearScreen() {
@@ -23,12 +26,18 @@ void clearDelay() {
 }
 
 void addProduct(){
-    if (productCount >= MAX_PRODUCTS) {
-        printf("Product list is full.\n");
+    if (productCount >= 10) {
+        printf("Product list is full.");
         return;
     }
+    struct Product newProduct;
     printf("Enter product name: ");
-    scanf("%s", itemList[productCount]);
+    scanf("%s", newProduct.name);
+    printf("Enter product price: ");
+    scanf("%f", &newProduct.price);
+    printf("Enter product stock: ");
+    scanf("%d", &newProduct.stock);
+    products[productCount] = newProduct;
     productCount++;
     printf("Product added successfully.\n");
 }
@@ -38,26 +47,86 @@ void listProducts(){
         printf("No products available.\n");
         return;
     }
-    printf("Available Products:\n");
+    printf("Product List:\n");
     for (int i = 0; i < productCount; i++){
-        printf("%d. %s\n", i + 1, itemList[i]);
+        printf("%d. Name: %s, Price: %.2f, Stock: %d\n", i + 1, products[i].name, products[i].price, products[i].stock);
     }
 }
 
 void searchProduct(){
-    char search[MAX_LENGTH];
-    printf("Enter search term: ");
+    if (productCount == 0){
+        printf("No products available.\n");
+        return;
+    }
+    char search[50];
+    printf("Enter product name to search: ");
     scanf("%s", search);
     int found = 0;
-    for(int i = 0; i < productCount; i++){
-        if (strcmp(itemList[i], search) == 0){
-            printf("Product found: %s\n", itemList[i]);
-            return;
+    for (int i = 0; i < productCount; i++){
+        if (strcmp(products[i].name, search) == 0){
+            printf("Product found: Name: %s, Price: %.2f, Stock: %d\n", products[i].name, products[i].price, products[i].stock);
+            found = 1;
+            break;
         }
     }
-    if (!found){
+    if (!found) {
         printf("Product not found.\n");
     }
+}
+
+void editProduct(){
+    printf("Select product to edit:\n");
+    listProducts();
+    int choice;
+    printf("Enter product number: ");
+    scanf("%d", &choice);
+    if (choice < 1 || choice > productCount){
+        printf("Invalid product number.\n");
+        return;
+    }
+    struct Product *prod = &products[choice - 1];
+    printf("Choose field to edit:\n");
+    printf("1. Name\n");
+    printf("2. Price\n");
+    printf("3. Stock\n");
+    int field;
+    printf("Enter your choice: ");
+    scanf("%d", &field);
+    switch (field){
+    case 1:
+        printf("Enter new name: ");
+        scanf("%s", prod->name);
+        break;
+    case 2:
+        printf("Enter new price: ");
+        scanf("%f", &prod->price);
+        break;
+    case 3:
+        printf("Enter new stock: ");
+        scanf("%d", &prod->stock);
+        break;
+    default:
+        printf("Invalid choice.\n");
+        return;
+    }
+    printf("Product updated successfully.\n");
+}
+
+void deleteProduct(){
+    printf("Select product to delete:\n");
+    listProducts();
+    int choice;
+    printf("Enter product number: ");
+    scanf("%d", &choice);
+    if (choice < 1 || choice > productCount){
+        printf("Invalid product number.\n");
+        return;
+    }
+    for (int i = choice - 1; i < productCount - 1; i++){
+        products[i] = products[i + 1];
+    }
+    productCount--;
+    printf("Product deleted successfully.\n");
 }
 
 int customerMenu(){
@@ -111,13 +180,11 @@ int adminMenu(){
         clearDelay();
             break;
         case 3:
-            printf("Edit Product.\n");
-            printf("Will be implemented in later release.\n");
+            editProduct();
         clearDelay();
             break;
         case 4:
-            printf("Delete Product.\n");
-            printf("Will be implemented in later release.\n");
+            deleteProduct();
         clearDelay();
             break;
         case 5:
