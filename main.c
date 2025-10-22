@@ -8,8 +8,25 @@ struct Product{
     int stock;
 };
 
+struct Order{
+    int orderId;
+    int customerId;
+    int productId;
+    int quantity;
+    float discount;
+};
+
+struct Customer{
+    int customerId;
+    char name[50];
+};
+
 struct Product products[10];
+struct Order orders[100];
+struct Customer customers[10];
 int productCount = 0;
+int customerCount = 0;
+int orderCount = 0;
 
 void clearScreen() {
     #ifdef _WIN32
@@ -129,24 +146,88 @@ void deleteProduct(){
     printf("Product deleted successfully.\n");
 }
 
+int customerCheck(char* name){
+    for (int i = 0; i < customerCount; i++){
+        if (strcmp(customers[i].name, name) == 0){
+            return customers[i].customerId;
+        }
+    }
+    struct Customer newCustomer;
+    newCustomer.customerId = customerCount + 1;
+    strcpy(newCustomer.name, name);
+    customers[customerCount] = newCustomer;
+    customerCount++;
+    return newCustomer.customerId;
+}
+
+void listOrders(){
+    if (orderCount == 0){
+        printf("No orders placed.\n");
+        return;
+    }
+    printf("Order List:\n");
+    for (int i = 0; i < orderCount; i++){
+        struct Order ord = orders[i];
+        struct Customer cust = customers[ord.customerId - 1];
+        struct Product prod = products[ord.productId - 1];
+        printf("Order ID: %d, Customer: %s, Product: %s, Quantity: %d, Discount: %.2f\n",
+               ord.orderId, cust.name, prod.name, ord.quantity, ord.discount);
+    }
+}
+
 int customerMenu(){
     int choice;
     while(1){
         clearScreen();
         printf("Customer Menu\n");
         printf("1. List Products\n");
-        printf("2. Search Product\n");
+        printf("2. Order Products\n");
         printf("3. Exit to Main Menu\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
         switch (choice){
         case 1:
             listProducts();
-        clearDelay();
+            clearDelay();
             break;
         case 2:
-            searchProduct();
-        clearDelay();
+            if (productCount == 0){
+                printf("No products available to order.\n");
+                clearDelay();
+                break;
+            }
+            listProducts();
+            printf("Select product to order:\n");
+            int prodChoice, quantity;
+            printf("Enter product number: ");
+            scanf("%d", &prodChoice);
+            if (prodChoice < 1 || prodChoice > productCount){
+                printf("Invalid product number.\n");
+                clearDelay();
+                break;
+            }
+            printf("Enter quantity: ");
+            scanf("%d", &quantity);
+            if (quantity > products[prodChoice - 1].stock){
+                printf("Insufficient stock.\n");
+                clearDelay();
+                break;
+            }
+            printf("Enter your name: ");
+            char custName[50];
+            scanf("%s", custName);
+            int custId = customerCheck(custName);
+            products[prodChoice - 1].stock -= quantity;
+            struct Order newOrder;
+            newOrder.orderId = orderCount + 1;
+            newOrder.customerId = custId;
+            newOrder.productId = prodChoice;
+            newOrder.quantity = quantity;
+            newOrder.discount = 0.0;
+            orders[orderCount] = newOrder;
+            orderCount++;
+            printf("Order placed successfully.\n");
+            clearDelay();
             break;
         case 3:
             return 0;
@@ -167,31 +248,36 @@ int adminMenu(){
         printf("2. Add Product\n");
         printf("3. Edit Product \n");
         printf("4. Delete Product \n");
-        printf("5. Exit to Main Menu\n");
+        printf("5. List Orders\n");
+        printf("6. Exit to Main Menu\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
         switch (choice){
         case 1:
             listProducts();
-        clearDelay();
+            clearDelay();
             break;
         case 2:
             addProduct();
-        clearDelay();
+            clearDelay();
             break;
         case 3:
             editProduct();
-        clearDelay();
+            clearDelay();
             break;
         case 4:
             deleteProduct();
-        clearDelay();
+            clearDelay();
             break;
         case 5:
+            listOrders();
+            clearDelay();
+            break;
+        case 6:
             return 0;
         default:
             printf("Invalid choice. Please try again.\n");
-        clearDelay();
+            clearDelay();
             break;
         }
     }
