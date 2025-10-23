@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h> // #
 
 struct Product{
     char name[50];
@@ -28,6 +29,8 @@ int productCount = 0;
 int customerCount = 0;
 int orderCount = 0;
 
+const char* ADMIN_PASSWORD = "admin123"; // # admin password
+
 void clearScreen() {
     #ifdef _WIN32
         system("cls");
@@ -42,6 +45,19 @@ void clearDelay() {
     getchar();
 }
 
+// # Case-insensitive substring check utility
+int containsCaseInsensitive(const char* haystack, const char* needle) { // #
+    if (!haystack || !needle) return 0; 
+    size_t nlen = strlen(needle); 
+    if (nlen == 0) return 1; 
+    for (const char* h = haystack; *h; ++h) { 
+        size_t i = 0; 
+        while (needle[i] && h[i] && tolower((unsigned char)h[i]) == tolower((unsigned char)needle[i])) i++; // #
+        if (i == nlen) return 1; 
+    } 
+    return 0; 
+} 
+
 void addProduct(){
     if (productCount >= 10) {
         printf("Product list is full.");
@@ -49,7 +65,7 @@ void addProduct(){
     }
     struct Product newProduct;
     printf("Enter product name: ");
-    scanf("%s", newProduct.name);
+    scanf("%49s", newProduct.name);
     printf("Enter product price: ");
     scanf("%f", &newProduct.price);
     printf("Enter product stock: ");
@@ -77,7 +93,7 @@ void searchProduct(){
     }
     char search[50];
     printf("Enter product name to search: ");
-    scanf("%s", search);
+    scanf("%49s", search);
     int found = 0;
     for (int i = 0; i < productCount; i++){
         if (strcmp(products[i].name, search) == 0){
@@ -112,7 +128,7 @@ void editProduct(){
     switch (field){
     case 1:
         printf("Enter new name: ");
-        scanf("%s", prod->name);
+        scanf("%49s", prod->name);
         break;
     case 2:
         printf("Enter new price: ");
@@ -196,7 +212,31 @@ int customerMenu(){
                 clearDelay();
                 break;
             }
+
             listProducts();
+
+            // # search (case-insensitive, partial)
+            {
+                char search[50]; 
+                printf("\nSearch product by name (partial, case-insensitive). Enter * to keep full list: "); 
+                scanf("%49s", search); 
+                if (strcmp(search, "*") != 0) { 
+                    int any = 0; 
+                    printf("\nFiltered Results:\n"); 
+                    for (int i = 0; i < productCount; i++) { 
+                        if (containsCaseInsensitive(products[i].name, search)) { 
+                            printf("%d. Name: %s, Price: %.2f, Stock: %d\n", i + 1, products[i].name, products[i].price, products[i].stock); 
+                            any = 1; 
+                        } 
+                    } 
+                    if (!any) { 
+                        printf("No matching products.\n"); 
+                        clearDelay(); 
+                        break; 
+                    } 
+                } 
+            } 
+
             printf("Select product to order:\n");
             int prodChoice, quantity;
             printf("Enter product number: ");
@@ -215,7 +255,7 @@ int customerMenu(){
             }
             printf("Enter your name: ");
             char custName[50];
-            scanf("%s", custName);
+            scanf("%49s", custName);
             int custId = customerCheck(custName);
             products[prodChoice - 1].stock -= quantity;
             struct Order newOrder;
@@ -233,11 +273,22 @@ int customerMenu(){
             return 0;
         default:
             printf("Invalid choice. Please try again.\n");
-        clearDelay();
+            clearDelay();
             break;
         }
     }
 }
+
+// # admin password verification before pening admin menu
+int verifyAdminPassword() { 
+    char input[64]; 
+    printf("Enter admin password: "); 
+    scanf("%63s", input); 
+    if (strcmp(input, ADMIN_PASSWORD) == 0) return 1; 
+    printf("Incorrect password.\n"); 
+    clearDelay(); 
+    return 0; 
+} 
 
 int adminMenu(){
     int choice;
@@ -298,7 +349,7 @@ int mainMenu(){
             customerMenu();
             break;
         case 2:
-            adminMenu();
+            if (verifyAdminPassword()) { adminMenu(); } // #
             break;
         case 3:
             printf("Exiting the program.\n");
