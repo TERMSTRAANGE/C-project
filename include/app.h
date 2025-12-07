@@ -2,6 +2,7 @@
 #include <stddef.h>
 
 typedef struct{
+    int productId;
     char name[50];
     float price;
     int stock;

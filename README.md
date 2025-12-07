@@ -19,6 +19,7 @@ This should generate the executable in the root directory.
 ### High Priority
 - Implement storage(use [`storage.c`](./src/storage.c) for the back end, [`app.c`](./src/app.c) for middle man and [`ui.c`](./src/ui.c) for the front end)
 - Fill out header files
+- Implement discounts
 
 ### Low Priority
 - Re-introduce password for admin, this time with password being read from `.env` file

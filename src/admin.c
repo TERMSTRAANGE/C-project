@@ -36,8 +36,14 @@ void deleteProduct(AppData* appData, int productId){
         printf("Invalid product ID.\n");
         return;
     }
+    for(int i = 0; i < appData->orders.count; i++){
+        if(appData->orders.items[i].productId == productId){
+            appData->orders.items[i].productId = -1;
+        }
+    }
     for(int i = productId; i < appData->products.count - 1; i++){
         appData->products.items[i] = appData->products.items[i + 1];
+        appData->products.items[i].productId = i;
     }
     appData->products.count--;
 }
@@ -47,6 +53,12 @@ void listOrders(AppData* appData){
     for(int i = 0; i < appData->orders.count; i++){
         Order* order = &appData->orders.items[i];
         Customer* customer = &appData->customers.items[order->customerId];
+        if(order->productId < 0){
+            char deletedProductName[] = "Deleted Product";
+            printf("Order ID: %d, Customer: %s, Product: %s, Quantity: %d, Discount: %.2f\n",
+                   order->orderId, customer->name, deletedProductName, order->quantity, order->discount);
+            continue;
+        }
         Product* product = &appData->products.items[order->productId];
         printf("Order ID: %d, Customer: %s, Product: %s, Quantity: %d, Discount: %.2f\n",
                order->orderId, customer->name, product->name, order->quantity, order->discount);
