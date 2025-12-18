@@ -7,6 +7,7 @@ void addProduct(AppData* appData){
         increaseAppDataCapacity(appData, 0);
     }
     Product newProduct;
+    newProduct.productId = appData->products.count;
     printf("Enter product name: ");
     scanf("%s", newProduct.name);
     printf("Enter product price: ");

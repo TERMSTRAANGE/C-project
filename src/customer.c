@@ -27,9 +27,7 @@ Customer* createCustomer(AppData* appData, const char* name) {
     
     // Resize array if needed
     if (appData->customers.count >= appData->customers.capacity) {
-        if (!increaseAppDataCapacity(appData, 2)) {  // 2 is for customers
-            return NULL;
-        }
+        increaseAppDataCapacity(appData, 2);
     }
     
     // Initialize new customer
