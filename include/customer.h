@@ -1,11 +1,9 @@
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
 
+#include <stdbool.h>
 #include "app.h"
 
-extern const char* STATUS_NO_DISCOUNT;
-extern const char* STATUS_STANDARD;
-extern const char* STATUS_VIP;
 
 Customer* findCustomerByName(AppData* appData, const char* name);
 Customer* createCustomer(AppData* appData, const char* name);

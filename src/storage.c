@@ -91,6 +91,8 @@ int loadDataFromFile(AppData* appData, const char* filename) {
     char section[32];
     int loading = 0; // 0=none, 1=products, 2=customers, 3=orders
     int line_num = 0;
+    int count = 0;
+    int result = 1;
 
     while (fgets(line, sizeof(line), file)) {
         line_num++;

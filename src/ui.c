@@ -276,8 +276,16 @@ void checkCustomerStatus(const AppData* appData) {
             orderCount++;
             Order* order = &appData->orders.items[i];
             Product* product = &appData->products.items[order->productId];
-            
             printf("\nOrder #%d\n", order->orderId);
+            if(order->productId < 0){
+                printf("Product: Deleted Product\n");
+                printf("Quantity: %d\n", order->quantity);
+                printf("Price: $0.00\n");
+                printf("Discount: $%.2f\n", order->discount);
+                printf("Total: $%.2f\n", 
+                      (0.00 * order->quantity) - order->discount);
+                continue;
+            }
             printf("Product: %s\n", product->name);
             printf("Quantity: %d\n", order->quantity);
             printf("Price: $%.2f\n", product->price);
